@@ -1,0 +1,7 @@
+FROM postgres:13.1
+
+ENV POSTGRES_PASSWORD postgres
+ENV POSTGRES_DB postgres
+
+COPY ./sql/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+# COPY ./sql/seed.sql /docker-entrypoint-initdb.d/02-seed.sql
