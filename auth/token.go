@@ -9,7 +9,6 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Claims struct {
@@ -64,12 +63,4 @@ func ExtractToken(r *http.Request) string {
 		return strings.Split(bearerToken, " ")[1]
 	}
 	return ""
-}
-
-func VerifyPassword(enteredPass string, actualPass string) error {
-	return bcrypt.CompareHashAndPassword([]byte(enteredPass), []byte(actualPass))
-}
-
-func Hash(password string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 }

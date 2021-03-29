@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"finance-tracker/model"
@@ -25,7 +25,12 @@ func (s *Server) Initialize() {
 		MaxAge:           300,
 		Debug:            false,
 	}))
-
+	s.Router.Route("/api/login", func(r chi.Router) {
+		r.Post("/", s.LoginHandler)
+	})
+	s.Router.Route("/api/user", func(r chi.Router) {
+		r.Post("/", s.AppUserHandler)
+	})
 	fmt.Println("Backend Initialized")
 	err := http.ListenAndServe("0.0.0.0:8080", s.Router)
 	if err != nil {

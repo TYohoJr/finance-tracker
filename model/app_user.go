@@ -1,9 +1,10 @@
 package model
 
 import (
-	"finance-tracker/auth"
 	"fmt"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AppUser struct {
@@ -14,8 +15,16 @@ type AppUser struct {
 	CreatedDate *time.Time `db:"created_date" json:"created_date"`
 }
 
+func (u *AppUser) VerifyPassword(enteredPass string) error {
+	return bcrypt.CompareHashAndPassword([]byte(*u.Password), []byte(enteredPass))
+}
+
+func (u *AppUser) Hash(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}
+
 func (db *DB) CreateAppUser(u *AppUser) (*AppUser, error) {
-	hashByte, err := auth.Hash(*u.Password)
+	hashByte, err := u.Hash(*u.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -36,4 +45,19 @@ func (db *DB) CreateAppUser(u *AppUser) (*AppUser, error) {
 		rows.Scan(&u.ID)
 	}
 	return u, nil
+}
+
+func (db *DB) GetAppUserByEmail(email string) (*AppUser, error) {
+	u := []AppUser{}
+	err := db.Select(&u,
+		`SELECT id, first_name, email, password, created_date
+		FROM app_user
+		WHERE email=$1`, email)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch user by email: %v", err)
+	}
+	if len(u) < 1 {
+		return nil, nil
+	}
+	return &u[0], nil
 }

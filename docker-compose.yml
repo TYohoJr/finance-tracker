@@ -5,14 +5,14 @@ services:
       context: .
       dockerfile: Dockerfile.db
     labels:
-      - stocktracker
+      - finance-tracker
   app:
     build:
       context: .
       dockerfile: Dockerfile.app
     labels:
-      - stocktracker
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 2; done; ./stocktracker_binary'
+      - finance-tracker
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 2; done; ./finance_tracker'
     links:
       - "db:db"
     expose:
